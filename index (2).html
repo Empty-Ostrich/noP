@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Mes 28 jours</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Layout: one narrow column — level + check-in first, then the chain, badges, if-then plan, urge timer, triggers */
+:root{
+  --bg:#EEF1F6; --surface:#FFFFFF; --fg:#18202E; --muted:#5B6578; --line:#D5DBE6;
+  --accent:#2B4BD8; --accent-soft:#DDE4FB; --ok:#1E8A5A; --ok-soft:#D3EFE1; --slip:#B9660E; --slip-soft:#F8E6CF;
+  --near:#7A5BC7; --near-soft:#E8E0FA; --gold:#B08A12; --gold-soft:#F6EBC6;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"Atkinson Hyperlegible", system-ui, -apple-system, sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111622; --surface:#1A2131; --fg:#E7ECF5; --muted:#9AA5BA; --line:#2C3549;
+  --accent:#8EA4FF; --accent-soft:#25305A; --ok:#5CCB94; --ok-soft:#173A2B; --slip:#F0A65A; --slip-soft:#3F2B15;
+  --near:#B9A2FF; --near-soft:#2E2550; --gold:#E9C552; --gold-soft:#3A3115; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111622; --surface:#1A2131; --fg:#E7ECF5; --muted:#9AA5BA; --line:#2C3549;
+  --accent:#8EA4FF; --accent-soft:#25305A; --ok:#5CCB94; --ok-soft:#173A2B; --slip:#F0A65A; --slip-soft:#3F2B15;
+  --near:#B9A2FF; --near-soft:#2E2550; --gold:#E9C552; --gold-soft:#3A3115; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 56px}
+.wrap{max-width:620px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+h1,h2{font-family:var(--display);text-wrap:balance;margin:0}
+h1{font-size:2rem;font-weight:800;letter-spacing:-.01em}
+h2{font-size:1.15rem;font-weight:600}
+.eyebrow{font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.hero{display:flex;gap:18px;align-items:flex-end;flex-wrap:wrap;justify-content:space-between}
+.hero-l{display:flex;gap:12px;align-items:flex-end}
+.big{font-family:var(--display);font-weight:800;font-size:4.2rem;line-height:.9;color:var(--accent);font-variant-numeric:tabular-nums}
+.hero .lbl{color:var(--muted);padding-bottom:6px}
+.lvl{text-align:right}
+.lvl .name{font-family:var(--display);font-weight:800;font-size:1.1rem}
+.lvl .xp{color:var(--muted);font-size:.85rem;font-variant-numeric:tabular-nums}
+.bar{height:10px;border-radius:999px;background:var(--bg);border:1px solid var(--line);overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--accent);border-radius:999px;width:0}
+.bar-l{display:flex;justify-content:space-between;font-size:.82rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.stats{display:flex;gap:10px;flex-wrap:wrap}
+.pill{background:var(--accent-soft);border-radius:999px;padding:4px 12px;font-size:.88rem;font-variant-numeric:tabular-nums}
+.btns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+button{font:inherit;cursor:pointer;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--fg);padding:10px 12px}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.b-ok{background:var(--ok);border-color:var(--ok);color:var(--surface);font-weight:700;padding:14px 8px}
+.b-near{background:var(--near-soft);border-color:var(--near);color:var(--fg);font-weight:700;padding:14px 8px}
+.b-slip{background:var(--slip-soft);border-color:var(--slip);color:var(--fg);font-weight:700;padding:14px 8px}
+.btns small{display:block;font-weight:400;font-size:.75rem;color:inherit;opacity:.8}
+.status{font-size:.95rem;color:var(--muted);min-height:1.5em}
+.grid{display:flex;flex-direction:column;gap:8px}
+.week{display:grid;grid-template-columns:4.6rem repeat(7,1fr);gap:6px;align-items:center}
+.week .wl{font-size:.8rem;color:var(--muted);font-weight:700}
+.cell{aspect-ratio:1;max-width:100%;padding:0;border-radius:8px;font-size:.8rem;font-variant-numeric:tabular-nums;display:grid;place-items:center;background:var(--bg)}
+.cell.clean{background:var(--ok-soft);border-color:var(--ok);color:var(--ok);font-weight:700}
+.cell.near{background:var(--near-soft);border-color:var(--near);color:var(--near);font-weight:700}
+.cell.slip{background:var(--slip-soft);border-color:var(--slip);color:var(--slip);font-weight:700}
+.cell.today{outline:2px solid var(--accent);outline-offset:1px}
+.cell.future{opacity:.45;cursor:default}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.85rem;color:var(--muted)}
+.sw{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:5px;border:1px solid var(--line)}
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+.badge{border:1px dashed var(--line);border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:2px;color:var(--muted);min-width:0}
+.badge b{font-family:var(--display);font-size:.95rem}
+.badge span{font-size:.78rem}
+.badge.on{border-style:solid;border-color:var(--gold);background:var(--gold-soft);color:var(--fg)}
+.badge.on b::before{content:"★ ";color:var(--gold)}
+ol{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:6px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border-radius:999px;padding:6px 12px;font-size:.9rem}
+.chip .n{color:var(--muted);font-variant-numeric:tabular-nums;margin-left:4px}
+.timer{font-family:var(--display);font-size:2.4rem;font-weight:800;font-variant-numeric:tabular-nums;color:var(--accent)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.plan{display:grid;grid-template-columns:auto 1fr;gap:8px 10px;align-items:center}
+.plan label{font-weight:700}
+input[type=text],input[type=date]{font:inherit;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--fg);min-width:0;width:100%}
+input[type=date]{width:auto}
+small,.note{color:var(--muted);font-size:.85rem}
+.danger{border-color:var(--slip);color:var(--slip)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:12px 18px;border-radius:12px;font-weight:700;max-width:calc(100% - 32px);z-index:20;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.hist{display:flex;flex-direction:column;gap:4px;font-size:.88rem;color:var(--muted);font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion:no-preference){.cell{transition:background .15s}.bar>i{transition:width .4s ease}}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Objectif : 28 jours</div>
+    <h1>Mes 28 jours</h1>
+  </header>
+
+  <section class="card" aria-labelledby="t-today">
+    <div class="hero">
+      <div class="hero-l">
+        <div class="big" id="streak">0</div>
+        <div class="lbl">jour(s)<br>d'affilée</div>
+      </div>
+      <div class="lvl">
+        <div class="name" id="lvl-name">Niveau 1</div>
+        <div class="xp" id="xp">0 XP</div>
+      </div>
+    </div>
+    <div>
+      <div class="bar" aria-hidden="true"><i id="bar"></i></div>
+      <div class="bar-l"><span id="bar-a">0 / 28 jours tenus</span><span id="bar-b"></span></div>
+    </div>
+    <div class="stats">
+      <span class="pill" id="s-day">Jour 1 / 28</span>
+      <span class="pill" id="s-best">Record : 0</span>
+      <span class="pill" id="s-urges">0 envie battue</span>
+    </div>
+    <h2 id="t-today">Aujourd'hui, j'ai tenu ?</h2>
+    <div class="btns">
+      <button class="b-ok" id="btn-ok">Tenu ✓<small>+10 XP</small></button>
+      <button class="b-near" id="btn-near">Écart<small>regardé, arrêté</small></button>
+      <button class="b-slip" id="btn-slip">Rechute<small>noter et repartir</small></button>
+    </div>
+    <div class="status" id="status" role="status"></div>
+  </section>
+
+  <section class="card" aria-labelledby="t-grid">
+    <h2 id="t-grid">La chaîne</h2>
+    <div class="grid" id="grid"></div>
+    <div class="legend">
+      <span><span class="sw" style="background:var(--ok-soft);border-color:var(--ok)"></span>tenu</span>
+      <span><span class="sw" style="background:var(--near-soft);border-color:var(--near)"></span>écart</span>
+      <span><span class="sw" style="background:var(--slip-soft);border-color:var(--slip)"></span>rechute</span>
+      <span>Touche une case passée pour la corriger.</span>
+    </div>
+  </section>
+
+  <section class="card" aria-labelledby="t-badges">
+    <h2 id="t-badges">Badges</h2>
+    <div class="badges" id="badges"></div>
+    <small>Les badges comptent tes jours tenus au total. Une rechute ne t'en retire aucun.</small>
+  </section>
+
+  <section class="card" aria-labelledby="t-plan">
+    <h2 id="t-plan">Mon plan « si… alors… »</h2>
+    <small>Décide maintenant de ce que tu feras au moment critique. Exemple : si je suis au lit avec mon téléphone, alors je le pose dans le salon.</small>
+    <div class="plan">
+      <label for="plan-if">Si</label><input type="text" id="plan-if" placeholder="je m'ennuie seul le soir">
+      <label for="plan-then">alors</label><input type="text" id="plan-then" placeholder="je sors marcher 10 minutes">
+    </div>
+  </section>
+
+  <section class="card" aria-labelledby="t-urge">
+    <h2 id="t-urge">Envie qui monte ? Plan 10 minutes</h2>
+    <ol>
+      <li>Lâche le téléphone dans une autre pièce.</li>
+      <li>Lance le minuteur et bouge : 20 pompes, douche froide ou sortir marcher.</li>
+      <li>Note ci-dessous ce qui a déclenché l'envie.</li>
+    </ol>
+    <div class="row">
+      <div class="timer" id="timer">10:00</div>
+      <button id="btn-timer">Lancer 10 min</button>
+    </div>
+    <small>Tenir jusqu'au bout = une envie battue, +5 XP. Une envie atteint son pic puis redescend, en général en moins de 15 minutes.</small>
+  </section>
+
+  <section class="card" aria-labelledby="t-trig">
+    <h2 id="t-trig">Mes déclencheurs</h2>
+    <small>Touche celui qui vient de te donner envie (+2 XP). Au bout d'une semaine, tu verras ton schéma.</small>
+    <div class="chips" id="chips"></div>
+  </section>
+
+  <section class="card" aria-labelledby="t-set">
+    <h2 id="t-set">Réglages</h2>
+    <div class="row">
+      <label for="start">Jour 1 :</label>
+      <input type="date" id="start">
+    </div>
+    <div class="row">
+      <button id="btn-cycle" class="danger">Nouveau cycle de 28 jours</button>
+      <button id="btn-cycle-no" hidden>Annuler</button>
+    </div>
+    <small id="cycle-note">Archive ce cycle (tes XP et badges restent) et repart à aujourd'hui.</small>
+    <div class="hist" id="hist"></div>
+    <small id="save-note">Sauvegarde…</small>
+  </section>
+</div>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+(function(){
+  var TRIGGERS=["Ennui","Stress","Fatigue / tard le soir","Téléphone au lit","Seul à la maison","Réseaux sociaux","Après une dispute"];
+  var BADGES=[
+    {k:"d1",n:"Premier pas",d:"1 jour tenu",t:"clean",v:1},
+    {k:"d3",n:"Lancé",d:"3 jours tenus",t:"clean",v:3},
+    {k:"d7",n:"Une semaine",d:"7 jours tenus",t:"clean",v:7},
+    {k:"d14",n:"Mi-parcours",d:"14 jours tenus",t:"clean",v:14},
+    {k:"d21",n:"Ça devient normal",d:"21 jours tenus",t:"clean",v:21},
+    {k:"d28",n:"Défi réussi",d:"28 jours tenus",t:"clean",v:28},
+    {k:"s7",n:"Chaîne de 7",d:"7 jours d'affilée",t:"streak",v:7},
+    {k:"u1",n:"Envie battue",d:"1 minuteur jusqu'au bout",t:"urges",v:1},
+    {k:"u5",n:"Surfeur",d:"5 envies battues",t:"urges",v:5},
+    {k:"p1",n:"Stratège",d:"Plan si/alors rempli",t:"plan",v:1}
+  ];
+  var LEVELS=[[0,"Débutant"],[50,"Apprenti"],[120,"Régulier"],[220,"Solide"],[350,"Maître de soi"]];
+  var LS="mes28jours.v1";
+  var state, docRef=null, saveTimer=null;
+
+  function pad(n){return String(n).padStart(2,"0")}
+  function iso(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
+  function parse(s){var p=s.split("-");return new Date(+p[0],+p[1]-1,+p[2])}
+  function addDays(s,n){var d=parse(s);d.setDate(d.getDate()+n);return iso(d)}
+  function diff(a,b){return Math.round((parse(b)-parse(a))/864e5)}
+  var today=iso(new Date());
+  function $(id){return document.getElementById(id)}
+
+  function loadLocal(){try{var r=localStorage.getItem(LS);if(r)return JSON.parse(r)}catch(e){}return null}
+  function saveLocal(){try{localStorage.setItem(LS,JSON.stringify(state))}catch(e){}}
+  function obj(x){return x&&typeof x==="object"&&!Array.isArray(x)?x:{}}
+  function normalize(s){
+    s=obj(s);
+    return {start:typeof s.start==="string"?s.start:today,days:obj(s.days),triggers:obj(s.triggers),
+      urges:+s.urges||0,bonusXp:+s.bonusXp||0,planIf:typeof s.planIf==="string"?s.planIf:"",planThen:typeof s.planThen==="string"?s.planThen:"",
+      history:Array.isArray(s.history)?s.history:[],earned:obj(s.earned)};
+  }
+
+  function save(){
+    saveLocal();
+    var note=$("save-note");
+    if(!docRef){note.textContent="Sauvegardé sur cet appareil.";return}
+    clearTimeout(saveTimer);note.textContent="Sauvegarde…";
+    saveTimer=setTimeout(function(){
+      docRef.set(JSON.parse(JSON.stringify(state))).then(function(){
+        note.textContent="Sauvegardé dans ton compte (privé, visible par toi seul).";
+      }).catch(function(){note.textContent="Sauvegardé sur cet appareil seulement (compte injoignable)."});
+    },400);
+  }
+
+  function stats(){
+    var dayN=diff(state.start,today)+1, clean=0, best=0, run=0;
+    for(var i=0;i<28;i++){
+      var k=addDays(state.start,i);
+      if(diff(k,today)<0)break;
+      if(state.days[k]==="clean"){clean++;run++;best=Math.max(best,run)}else{run=0}
+    }
+    var streak=0, cur=state.days[today]==="clean"?today:addDays(today,-1);
+    while(state.days[cur]==="clean"&&diff(state.start,cur)>=0){streak++;cur=addDays(cur,-1)}
+    var pastClean=state.history.reduce(function(a,h){return a+(+h.clean||0)},0);
+    var trig=Object.keys(state.triggers).reduce(function(a,k){return a+(+state.triggers[k]||0)},0);
+    var xp=(clean+pastClean)*10+state.urges*5+trig*2+state.bonusXp;
+    return {dayN:dayN,clean:clean,best:Math.max(best,streak),streak:streak,xp:xp,totalClean:clean+pastClean};
+  }
+  function level(xp){var i=0;for(var j=0;j<LEVELS.length;j++)if(xp>=LEVELS[j][0])i=j;return i}
+
+  function badgeMet(b,s){
+    if(b.t==="clean")return s.totalClean>=b.v;
+    if(b.t==="streak")return s.best>=b.v;
+    if(b.t==="urges")return state.urges>=b.v;
+    if(b.t==="plan")return state.planIf.trim()&&state.planThen.trim();
+    return false;
+  }
+
+  var toastT=null;
+  function toast(msg){var t=$("toast");t.textContent=msg;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(function(){t.hidden=true},3200)}
+
+  function checkBadges(silent){
+    var s=stats(),newOnes=[];
+    BADGES.forEach(function(b){if(!state.earned[b.k]&&badgeMet(b,s)){state.earned[b.k]=today;newOnes.push(b.n)}});
+    if(newOnes.length&&!silent)toast("Badge débloqué : "+newOnes.join(", ")+" ★");
+    return newOnes.length;
+  }
+
+  function render(){
+    var s=stats(),li=level(s.xp);
+    $("streak").textContent=s.streak;
+    $("lvl-name").textContent="Niv. "+(li+1)+" · "+LEVELS[li][1];
+    var next=LEVELS[li+1];
+    $("xp").textContent=s.xp+" XP"+(next?" · encore "+(next[0]-s.xp)+" pour le niveau "+(li+2):"");
+    $("bar").style.width=Math.min(100,s.clean/28*100)+"%";
+    $("bar-a").textContent=s.clean+" / 28 jours tenus";
+    $("bar-b").textContent=s.clean>=28?"Objectif atteint":"encore "+(28-s.clean);
+    $("s-day").textContent=s.dayN<1?"Commence le "+parse(state.start).toLocaleDateString("fr-FR",{day:"numeric",month:"long"}):s.dayN>28?"Cycle terminé":"Jour "+s.dayN+" / 28";
+    $("s-best").textContent="Record : "+s.best;
+    $("s-urges").textContent=state.urges+(state.urges>1?" envies battues":" envie battue");
+    var t=state.days[today];
+    $("status").textContent=t==="clean"?"Aujourd'hui est noté : tenu. Bien joué.":t==="near"?"Écart noté. Tu t'es arrêté, c'est un vrai progrès. Note le déclencheur juste en dessous.":t==="slip"?"Rechute notée. La chaîne repart demain, tes jours tenus et badges restent.":"Pas encore noté aujourd'hui.";
+    $("start").value=state.start;
+    if(document.activeElement!==$("plan-if"))$("plan-if").value=state.planIf;
+    if(document.activeElement!==$("plan-then"))$("plan-then").value=state.planThen;
+
+    var g=$("grid");g.innerHTML="";
+    for(var w=0;w<4;w++){
+      var row=document.createElement("div");row.className="week";
+      var l=document.createElement("div");l.className="wl";l.textContent="Semaine "+(w+1);row.appendChild(l);
+      for(var d=0;d<7;d++){
+        var i=w*7+d,k=addDays(state.start,i),b=document.createElement("button"),v=state.days[k];
+        b.className="cell";b.textContent=i+1;b.dataset.k=k;
+        if(v)b.classList.add(v);
+        if(k===today)b.classList.add("today");
+        if(diff(k,today)<0){b.classList.add("future");b.disabled=true}
+        b.setAttribute("aria-label","Jour "+(i+1)+", "+parse(k).toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"})+(v==="clean"?", tenu":v==="near"?", écart":v==="slip"?", rechute":", pas noté"));
+        row.appendChild(b);
+      }
+      g.appendChild(row);
+    }
+
+    var bx=$("badges");bx.innerHTML="";
+    BADGES.forEach(function(b){
+      var el=document.createElement("div");el.className="badge"+(state.earned[b.k]?" on":"");
+      var n=document.createElement("b");n.textContent=b.n;var dd=document.createElement("span");dd.textContent=b.d;
+      el.appendChild(n);el.appendChild(dd);bx.appendChild(el);
+    });
+
+    var c=$("chips");c.innerHTML="";
+    TRIGGERS.forEach(function(name){
+      var b=document.createElement("button");b.className="chip";b.dataset.t=name;b.textContent=name;
+      var n=+state.triggers[name]||0;
+      if(n){var sp=document.createElement("span");sp.className="n";sp.textContent="×"+n;b.appendChild(sp)}
+      c.appendChild(b);
+    });
+
+    var h=$("hist");h.innerHTML="";
+    state.history.slice().reverse().forEach(function(x,i){
+      var r=document.createElement("div");
+      r.textContent="Cycle "+(state.history.length-i)+" (début "+parse(x.start).toLocaleDateString("fr-FR",{day:"numeric",month:"short"})+") : "+x.clean+"/28 tenus · record "+x.best;
+      h.appendChild(r);
+    });
+  }
+
+  function change(){checkBadges(false);render();save()}
+  function mark(k,v){if(v)state.days[k]=v;else delete state.days[k];change()}
+
+  $("btn-ok").onclick=function(){mark(today,"clean")};
+  $("btn-near").onclick=function(){mark(today,"near")};
+  $("btn-slip").onclick=function(){mark(today,"slip")};
+  $("grid").onclick=function(e){
+    var b=e.target.closest(".cell");if(!b||b.disabled)return;
+    var v=state.days[b.dataset.k],order=[undefined,"clean","near","slip"];
+    mark(b.dataset.k,order[(order.indexOf(v)+1)%4]);
+  };
+  $("chips").onclick=function(e){
+    var b=e.target.closest(".chip");if(!b)return;
+    state.triggers[b.dataset.t]=(+state.triggers[b.dataset.t]||0)+1;
+    toast("Noté : "+b.dataset.t+" (+2 XP)");render();save();
+  };
+  $("start").onchange=function(e){if(e.target.value){state.start=e.target.value;change()}};
+  var planT=null;
+  function onPlan(){state.planIf=$("plan-if").value;state.planThen=$("plan-then").value;clearTimeout(planT);planT=setTimeout(change,700)}
+  $("plan-if").oninput=onPlan;$("plan-then").oninput=onPlan;
+
+  var armed=false;
+  $("btn-cycle").onclick=function(){
+    if(!armed){armed=true;this.textContent="Oui, archiver et repartir";$("btn-cycle-no").hidden=false;$("cycle-note").textContent="Sûr ? Ce cycle passe dans l'historique et la grille repart à aujourd'hui.";return}
+    var s=stats();
+    state.history.push({start:state.start,clean:s.clean,best:s.best});
+    state.days={};state.start=today;
+    resetCycleBtn();toast("Nouveau cycle lancé. Jour 1 !");change();
+  };
+  function resetCycleBtn(){armed=false;$("btn-cycle").textContent="Nouveau cycle de 28 jours";$("btn-cycle-no").hidden=true;$("cycle-note").textContent="Archive ce cycle (tes XP et badges restent) et repart à aujourd'hui."}
+  $("btn-cycle-no").onclick=resetCycleBtn;
+
+  var tInt=null;
+  $("btn-timer").onclick=function(){
+    var btn=this,el=$("timer");
+    if(tInt){clearInterval(tInt);tInt=null;el.textContent="10:00";btn.textContent="Lancer 10 min";return}
+    var end=Date.now()+600000;btn.textContent="Arrêter";
+    tInt=setInterval(function(){
+      var r=Math.max(0,end-Date.now()),m=Math.floor(r/60000),s=Math.floor(r%60000/1000);
+      el.textContent=pad(m)+":"+pad(s);
+      if(r<=0){clearInterval(tInt);tInt=null;el.textContent="Battue ✓";btn.textContent="Relancer 10 min";
+        state.urges++;toast("Envie battue ! +5 XP");change()}
+    },250);
+  };
+
+  state=normalize(loadLocal());
+  checkBadges(true);render();
+  $("save-note").textContent="Sauvegardé sur cet appareil.";
+})();
+</script>
+
+</body>
+</html>
